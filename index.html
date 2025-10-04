@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseFlow - Smart Expense Management</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-card card">
+                <div class="card__body">
+                    <div class="logo-section">
+                        <h1><i class="fas fa-receipt"></i> ExpenseFlow</h1>
+                        <p>Smart Expense Management System</p>
+                    </div>
+                    
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width">Sign In</button>
+                    </form>
+                    
+                    <div class="divider">or</div>
+                    
+                    <button id="showRegister" class="btn btn--outline btn--full-width">Create New Account</button>
+                    
+                    <div class="demo-accounts">
+                        <h4>Demo Accounts:</h4>
+                        <div class="demo-buttons">
+                            <button class="btn btn--sm" data-email="admin@company.com" data-password="admin123">Admin</button>
+                            <button class="btn btn--sm" data-email="manager@company.com" data-password="manager123">Manager</button>
+                            <button class="btn btn--sm" data-email="employee@company.com" data-password="employee123">Employee</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Screen -->
+    <div id="registerScreen" class="screen hidden">
+        <div class="login-container">
+            <div class="login-card card">
+                <div class="card__body">
+                    <div class="logo-section">
+                        <h1><i class="fas fa-receipt"></i> ExpenseFlow</h1>
+                        <p>Create Your Company Account</p>
+                    </div>
+                    
+                    <form id="registerForm" class="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="registerEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="registerCompany" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-control" id="registerCountry" required>
+                                <option value="">Select Country</option>
+                                <option value="US">United States (USD)</option>
+                                <option value="GB">United Kingdom (GBP)</option>
+                                <option value="IN">India (INR)</option>
+                                <option value="CA">Canada (CAD)</option>
+                                <option value="DE">Germany (EUR)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full-width">Create Account</button>
+                    </form>
+                    
+                    <button id="showLogin" class="btn btn--outline btn--full-width mt-8">Back to Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="screen hidden">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <i class="fas fa-receipt"></i>
+                <span>ExpenseFlow</span>
+            </div>
+            <div class="navbar-menu">
+                <a href="#" class="nav-link" data-view="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="#" class="nav-link employee-only" data-view="submit-expense"><i class="fas fa-plus"></i> Submit Expense</a>
+                <a href="#" class="nav-link manager-only" data-view="approvals"><i class="fas fa-check-circle"></i> Approvals</a>
+                <a href="#" class="nav-link admin-only" data-view="admin"><i class="fas fa-cog"></i> Admin</a>
+                <a href="#" class="nav-link" data-view="expenses"><i class="fas fa-list"></i> My Expenses</a>
+            </div>
+            <div class="navbar-user">
+                <span id="currentUser">Loading...</span>
+                <button id="logoutBtn" class="btn btn--sm btn--outline">Logout</button>
+            </div>
+        </nav>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view active">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h2>Dashboard</h2>
+                    <div class="dashboard-actions">
+                        <span class="status status--info" id="companyInfo">TechCorp Inc. (USD)</span>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card card">
+                        <div class="card__body">
+                            <div class="stat-content">
+                                <div class="stat-value" id="totalExpenses">$12,450</div>
+                                <div class="stat-label">Total Expenses</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="card__body">
+                            <div class="stat-content">
+                                <div class="stat-value" id="pendingExpenses">8</div>
+                                <div class="stat-label">Pending Approval</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="card__body">
+                            <div class="stat-content">
+                                <div class="stat-value" id="approvedExpenses">24</div>
+                                <div class="stat-label">Approved</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card card">
+                        <div class="card__body">
+                            <div class="stat-content">
+                                <div class="stat-value" id="rejectedExpenses">3</div>
+                                <div class="stat-label">Rejected</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-container card">
+                        <div class="card__body">
+                            <h3>Monthly Expenses</h3>
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="monthlyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container card">
+                        <div class="card__body">
+                            <h3>Expenses by Category</h3>
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Expenses -->
+                <div class="recent-expenses card">
+                    <div class="card__body">
+                        <h3>Recent Expenses</h3>
+                        <div class="expense-list" id="recentExpensesList">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Expense View -->
+        <div id="submitExpenseView" class="view hidden">
+            <div class="container">
+                <div class="view-header">
+                    <h2>Submit New Expense</h2>
+                </div>
+
+                <div class="expense-form-container">
+                    <div class="receipt-upload card">
+                        <div class="card__body">
+                            <h3>Receipt Upload (OCR)</h3>
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-camera fa-3x"></i>
+                                <p>Drag & drop receipt image or click to upload</p>
+                                <input type="file" id="receiptFile" accept="image/*" hidden>
+                                <button type="button" class="btn btn--outline" onclick="document.getElementById('receiptFile').click()">Choose File</button>
+                            </div>
+                            <div id="ocrResults" class="hidden">
+                                <div class="status status--success">
+                                    <i class="fas fa-check"></i> Receipt processed successfully!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expense-form card">
+                        <div class="card__body">
+                            <h3>Expense Details</h3>
+                            <form id="expenseForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Amount</label>
+                                        <input type="number" class="form-control" id="expenseAmount" step="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Currency</label>
+                                        <select class="form-control" id="expenseCurrency" required>
+                                            <option value="USD">USD ($)</option>
+                                            <option value="EUR">EUR (€)</option>
+                                            <option value="GBP">GBP (£)</option>
+                                            <option value="INR">INR (₹)</option>
+                                            <option value="CAD">CAD (C$)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-control" id="expenseCategory" required>
+                                            <option value="">Select Category</option>
+                                            <option value="Travel">Travel</option>
+                                            <option value="Meals">Meals</option>
+                                            <option value="Office Supplies">Office Supplies</option>
+                                            <option value="Technology">Technology</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Training">Training</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="expenseDate" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" id="expenseDescription" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn--primary">Submit Expense</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approvals View -->
+        <div id="approvalsView" class="view hidden">
+            <div class="container">
+                <div class="view-header">
+                    <h2>Pending Approvals</h2>
+                    <div class="approval-filters">
+                        <select class="form-control" id="approvalFilter">
+                            <option value="all">All Approvals</option>
+                            <option value="direct">Direct Reports</option>
+                            <option value="high-amount">High Amount (&gt;$1000)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="approvals-list" id="approvalsList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="adminView" class="view hidden">
+            <div class="container">
+                <div class="view-header">
+                    <h2>Admin Panel</h2>
+                </div>
+
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="users">Users</button>
+                    <button class="tab-btn" data-tab="workflows">Workflows</button>
+                    <button class="tab-btn" data-tab="settings">Settings</button>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="usersTab" class="tab-content active">
+                    <div class="admin-section card">
+                        <div class="card__body">
+                            <div class="section-header">
+                                <h3>User Management</h3>
+                                <button class="btn btn--primary" id="addUserBtn">Add User</button>
+                            </div>
+                            <div class="users-table">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Manager</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workflows Tab -->
+                <div id="workflowsTab" class="tab-content hidden">
+                    <div class="admin-section card">
+                        <div class="card__body">
+                            <h3>Approval Workflows</h3>
+                            <div class="workflow-builder">
+                                <div class="workflow-levels" id="workflowLevels">
+                                    <!-- Populated by JavaScript -->
+                                </div>
+                                <button class="btn btn--outline" id="addWorkflowLevel">Add Level</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsTab" class="tab-content hidden">
+                    <div class="admin-section card">
+                        <div class="card__body">
+                            <h3>Company Settings</h3>
+                            <form id="companySettingsForm">
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <input type="text" class="form-control" id="companyName" value="TechCorp Inc.">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Default Currency</label>
+                                    <select class="form-control" id="defaultCurrency">
+                                        <option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option>
+                                        <option value="GBP">GBP (£)</option>
+                                        <option value="INR">INR (₹)</option>
+                                        <option value="CAD">CAD (C$)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Auto-Approval Limit</label>
+                                    <input type="number" class="form-control" id="autoApprovalLimit" value="100">
+                                </div>
+                                <button type="submit" class="btn btn--primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Expenses View -->
+        <div id="expensesView" class="view hidden">
+            <div class="container">
+                <div class="view-header">
+                    <h2>My Expenses</h2>
+                    <div class="expense-filters">
+                        <select class="form-control" id="expenseStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <input type="month" class="form-control" id="expenseMonthFilter">
+                    </div>
+                </div>
+
+                <div class="expenses-list" id="expensesList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="approvalModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Review Expense</h3>
+                <button class="close-btn" onclick="closeModal('approvalModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="approvalExpenseDetails">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comments</label>
+                    <textarea class="form-control" id="approvalComments" rows="3" placeholder="Add your comments..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" onclick="closeModal('approvalModal')">Cancel</button>
+                <button class="btn btn--secondary" id="rejectExpenseBtn">Reject</button>
+                <button class="btn btn--primary" id="approveExpenseBtn">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addUserModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <button class="close-btn" onclick="closeModal('addUserModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="newUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="newUserEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-control" id="newUserRole" required>
+                            <option value="">Select Role</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Manager</label>
+                        <select class="form-control" id="newUserManager">
+                            <option value="">No Manager</option>
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" onclick="closeModal('addUserModal')">Cancel</button>
+                <button class="btn btn--primary" id="saveUserBtn">Save User</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
